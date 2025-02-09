@@ -240,7 +240,7 @@ async function postToServer(quote) {
 }
 
 // Handle syncing with server and resolving conflicts (server data takes precedence)
-function handleDataSync(serverData) {
+function syncQuotes(serverData) {
     const conflicts = [];
     const updatedQuotes = [];
 
