@@ -180,3 +180,86 @@ function importFromJsonFile(event) {
 // Ensure the form is created when the page loads
 document.addEventListener("DOMContentLoaded", createAddQuoteForm);
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
+
+// Simulating periodic server interaction (every 5 seconds)
+setInterval(() => {
+    fetchFromServer(); // Simulate fetching data from server every 5 seconds
+}, 5000);
+
+// Simulate fetching data from a server (e.g., JSONPlaceholder or mock API)
+function fetchFromServer() {
+    // Simulating server data response with a delay
+    setTimeout(() => {
+        const simulatedServerData = [
+            { text: "The best way to predict the future is to create it.", category: "Motivation" },
+            { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", category: "Success" }
+        ];
+
+        handleDataSync(simulatedServerData);
+    }, 2000); // Simulate a 2-second delay from the server
+}
+
+// Handle syncing with server and resolving conflicts (server data takes precedence)
+function handleDataSync(serverData) {
+    const conflicts = [];
+    const updatedQuotes = [];
+
+    // Merge local and server data, resolving conflicts by giving server data precedence
+    serverData.forEach(serverQuote => {
+        const existingQuoteIndex = quotes.findIndex(localQuote => localQuote.text === serverQuote.text);
+
+        if (existingQuoteIndex !== -1) {
+            // Conflict found: Same text but different category
+            if (quotes[existingQuoteIndex].category !== serverQuote.category) {
+                conflicts.push({ local: quotes[existingQuoteIndex], server: serverQuote });
+                // Resolve conflict by prioritizing server data
+                quotes[existingQuoteIndex] = serverQuote;
+            }
+        } else {
+            // No conflict: Add server quote to local storage
+            updatedQuotes.push(serverQuote);
+        }
+    });
+
+    // Add new quotes to local storage
+    updatedQuotes.push(...quotes.filter(quote => !serverData.some(serverQuote => serverQuote.text === quote.text)));
+
+    // Show conflict resolution notification (if any)
+    if (conflicts.length > 0) {
+        showConflictNotification(conflicts);
+    } else {
+        alert("Data synced successfully. No conflicts detected.");
+    }
+
+    // Save the merged quotes to local storage
+    saveQuotes();
+    populateCategories(); // Re-populate the categories dropdown based on the new data
+}
+
+// Show notification for resolved conflicts
+function showConflictNotification(conflicts) {
+    const notificationContainer = document.getElementById("notificationContainer");
+
+    conflicts.forEach(conflict => {
+        const notification = document.createElement("div");
+        notification.classList.add("notification");
+        notification.innerHTML = `Conflict resolved: <strong>${conflict.local.text}</strong> was updated.`;
+
+        notificationContainer.appendChild(notification);
+        setTimeout(() => notification.remove(), 5000); // Remove notification after 5 seconds
+    });
+}
+
+// Add a container for notifications (optional, you can style it as needed)
+document.body.insertAdjacentHTML('beforeend', '<div id="notificationContainer" style="position: fixed; bottom: 10px; right: 10px;"></div>');
+
+// Test function to verify synchronization and conflict resolution manually
+function testSyncAndConflicts() {
+    const simulatedServerData = [
+        { text: "Life is what happens when you're busy making other plans.", category: "Life" }, // Same quote, different category
+        { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Motivation" }
+    ];
+
+    handleDataSync(simulatedServerData);
+}
+
