@@ -183,20 +183,32 @@ document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
 // Simulating periodic server interaction (every 5 seconds)
 setInterval(() => {
-    fetchQuotesFromServer (); // Simulate fetching data from server every 5 seconds
+    fetchQuotesFromServer(); // Simulate fetching data from server every 5 seconds
 }, 5000);
 
-// Simulate fetching data from a server (e.g., JSONPlaceholder or mock API)
-function fetchQuotesFromServer () {
-    // Simulating server data response with a delay
-    setTimeout(() => {
-        const simulatedServerData = [
-            { text: "The best way to predict the future is to create it.", category: "Motivation" },
-            { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", category: "Success" }
-        ];
-
-        handleDataSync(simulatedServerData);
-    }, 2000); // Simulate a 2-second delay from the server
+// Simulate fetching data from a server (using JSONPlaceholder API)
+async function fetchQuotesFromServer() {
+    try {
+        // Fetch data from mock API
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch data from server');
+        }
+        
+        const serverData = await response.json();
+        
+        // Extract just the quote-like data from the API response for this demo
+        const formattedData = serverData.slice(0, 5).map(post => ({
+            text: post.title, // Using the title as the quote text
+            category: post.userId % 2 === 0 ? 'Motivation' : 'Life' // Randomly assigning categories
+        }));
+        
+        handleDataSync(formattedData); // Handle the syncing and conflict resolution
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        alert('Error fetching data from the server.');
+    }
 }
 
 // Handle syncing with server and resolving conflicts (server data takes precedence)
@@ -262,4 +274,3 @@ function testSyncAndConflicts() {
 
     handleDataSync(simulatedServerData);
 }
-
