@@ -183,11 +183,11 @@ document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
 // Simulating periodic server interaction (every 5 seconds)
 setInterval(() => {
-    fetchFromServer(); // Simulate fetching data from server every 5 seconds
+    fetchQuotesFromServer(); // Simulate fetching data from server every 5 seconds
 }, 5000);
 
 // Simulate fetching data from a server (e.g., JSONPlaceholder or mock API)
-function fetchFromServer() {
+function fetchQuotesFromServer() {
     // Simulating server data response with a delay
     setTimeout(() => {
         const simulatedServerData = [
