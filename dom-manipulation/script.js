@@ -316,6 +316,6 @@ function addQuote() {
 
     document.getElementById("newQuoteText").value = "";
     document.getElementById("newQuoteCategory").value = "";
-    alert("Quote added successfully!");
+    alert("Quotes synced with server!");
     populateCategories(); // Ensure the categories dropdown is updated
 }
