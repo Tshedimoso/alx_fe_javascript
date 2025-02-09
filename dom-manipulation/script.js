@@ -9,12 +9,12 @@ function displayRandomQuote() {
     let filteredQuotes = category === "all" ? quotes : quotes.filter(q => q.category === category);
     
     if (filteredQuotes.length === 0) {
-        document.getElementById("quoteDisplay").innerText = "No quotes available in this category.";
+        document.getElementById("quoteDisplay").innerHTML = "<em>No quotes available in this category.</em>";
         return;
     }
 
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
-    document.getElementById("quoteDisplay").innerText = filteredQuotes[randomIndex].text;
+    document.getElementById("quoteDisplay").innerHTML = `<strong>${filteredQuotes[randomIndex].text}</strong>`;
 }
 
 function addQuote() {
