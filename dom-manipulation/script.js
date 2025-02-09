@@ -211,6 +211,34 @@ async function fetchQuotesFromServer() {
     }
 }
 
+// Post new quote to the server (using POST method)
+async function postToServer(quote) {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Specify the content type as JSON
+            },
+            body: JSON.stringify({
+                title: quote.text, // Using title as quote text
+                userId: Math.floor(Math.random() * 10) + 1, // Random userId (mock)
+                body: quote.category, // Use category as the body (mock API structure)
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to post quote to server');
+        }
+
+        const result = await response.json();
+        console.log('Post successful:', result);
+        alert('Quote posted to server successfully!');
+    } catch (error) {
+        console.error('Error posting data:', error);
+        alert('Error posting data to the server.');
+    }
+}
+
 // Handle syncing with server and resolving conflicts (server data takes precedence)
 function handleDataSync(serverData) {
     const conflicts = [];
@@ -265,12 +293,29 @@ function showConflictNotification(conflicts) {
 // Add a container for notifications (optional, you can style it as needed)
 document.body.insertAdjacentHTML('beforeend', '<div id="notificationContainer" style="position: fixed; bottom: 10px; right: 10px;"></div>');
 
-// Test function to verify synchronization and conflict resolution manually
-function testSyncAndConflicts() {
-    const simulatedServerData = [
-        { text: "Life is what happens when you're busy making other plans.", category: "Life" }, // Same quote, different category
-        { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Motivation" }
-    ];
+// Function to add new quote and post to the server
+function addQuote() {
+    const quoteText = document.getElementById("newQuoteText").value.trim();
+    const quoteCategory = document.getElementById("newQuoteCategory").value.trim();
 
-    handleDataSync(simulatedServerData);
+    if (quoteText === "" || quoteCategory === "") {
+        alert("Please enter both a quote and a category.");
+        return;
+    }
+
+    // Create quote object
+    const newQuote = { text: quoteText, category: quoteCategory };
+
+    // Post new quote to the mock server
+    postToServer(newQuote);
+
+    // Add quote to local storage and update UI
+    quotes.push(newQuote);
+    updateCategoryDropdown(quoteCategory);
+    saveQuotes(); // Save to local storage
+
+    document.getElementById("newQuoteText").value = "";
+    document.getElementById("newQuoteCategory").value = "";
+    alert("Quote added successfully!");
+    populateCategories(); // Ensure the categories dropdown is updated
 }
