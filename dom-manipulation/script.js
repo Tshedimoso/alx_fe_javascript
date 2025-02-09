@@ -4,7 +4,7 @@ const quotes = [
     { text: "In the middle of every difficulty lies opportunity.", category: "Success" },
 ];
 
-function showRandomQuote() {
+function displayRandomQuote() {
     const category = document.getElementById("categorySelect").value;
     let filteredQuotes = category === "all" ? quotes : quotes.filter(q => q.category === category);
     
